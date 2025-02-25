@@ -38,6 +38,61 @@ public:
             head = newSchool;
         }
     }
+
+    void deleteByName(const string name) {
+        if (head == nullptr) {
+            return;
+        }
+
+        if (head->name == name) {
+            School* toDelete = head;
+            head = head->next;
+            delete toDelete;
+            return;
+        }
+
+        School* current = head;
+        while (current->next != nullptr && current->next->name != name) {
+            current = current->next;
+        }
+
+        if (current->next == nullptr) return;
+
+        School* toDelete = current->next;
+        current->next = current->next->next;
+        delete toDelete;
+    }
+
+    void findByName(const string name) {
+        School* current = head;
+        while (current != nullptr) {
+            if (current->name == name) {
+                cout << "Name: " << current->name << endl;
+                cout << "Address: " << current->address << endl;
+                cout << "City: " << current->city << endl;
+                cout << "State: " << current->state << endl;
+                cout << "County: " << current->county << endl;
+                cout << "-------------------------" << endl;
+                return;
+            }
+            current = current->next;
+        }
+        cout << "Name: " << name <<" is not in the list."<< endl;
+        return;
+    }
+
+    void display() const {
+        School* current = head;
+        while (current != nullptr) {
+            cout << "Name: " << current->name << endl;
+            cout << "Address: " << current->address << endl;
+            cout << "City: " << current->city << endl;
+            cout << "State: " << current->state << endl;
+            cout << "County: " << current->county << endl;
+            cout << "-------------------------" << endl;
+            current = current->next;
+        }
+    }
 };
 
 
