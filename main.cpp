@@ -4,48 +4,6 @@
 #include <vector>
 using namespace std;
 
-template<typename T>
-struct Node
-{
-    T data;
-    Node* next;
-    Node(T val) : data(val), next(nullptr) {}
-};
-
-template<typename T>
-class SchoolList
-{
-    Node<T>* head;
-public:
-    SchoolList() : head(nullptr) {}
-    void append(T data)
-    {
-        Node<T>* newNode = new Node<T>(data);
-        if(head==nullptr)
-        {
-            head = newNode;
-        }else
-        {
-            Node<T>* temp = head;
-            while(temp->next != nullptr)
-            {
-                temp = temp->next;
-            }
-            temp->next = newNode;
-        }
-    }
-    void printList()
-    {
-        Node<T>* temp = head;
-        while(temp!=nullptr)
-        {
-            cout << temp->data << " -> ";
-            temp = temp->next;
-        }
-        cout << "nullptr" << endl;
-    }
-};
-
 struct School {
     string name;
     string address;
@@ -55,6 +13,33 @@ struct School {
     School* next;
 
 };
+
+class SchoolList
+{
+    School* head;
+public:
+    SchoolList() : head(nullptr) {}
+
+    void insertFirst(School school)
+    {
+        School* newSchool = new School(school);
+        newSchool->next = head;
+        head = newSchool;
+    }
+
+    void insertLast(School school) {
+        School* newSchool = new School(school);
+        newSchool->next = nullptr;
+        if (head == nullptr) {
+            head = newSchool;
+        }
+        else {
+            newSchool->next = head;
+            head = newSchool;
+        }
+    }
+};
+
 
 class CSVReader {
 public:
