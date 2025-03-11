@@ -65,4 +65,42 @@ class SchoolBST {
         }
         return node;
     }
+
+    Node* deleteNode(Node* node, string name) {
+        if (node == nullptr) return node;
+
+        if (name < node->school.name) {
+            node->left = deleteNode(node->left, name);
+        } else if (name > node->school.name) {
+            node->right = deleteNode(node->right, name);
+        } else {
+            if (node->left == nullptr) {
+                Node* temp = node->right;
+                delete node;
+                return temp;
+            } else if (node->right == nullptr) {
+                Node* temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            Node* temp = minValueNode(node->right);
+            node->school = temp->school;
+            node->right = deleteNode(node->right, temp->school.name);
+        }
+        return node;
+    }
+
+    Node* minValueNode(Node* node) {
+        Node* current = node;
+        while (current && current->left != nullptr)
+            current = current->left;
+        return current;
+    }
+
+    Node* search(Node* node, string name) {
+        if (node == nullptr || node ->school.name == name) return node;
+        if (name < node->school.name) return search(node->left, name);
+        return search(node->right, name);
+    }
 };
