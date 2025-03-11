@@ -103,4 +103,36 @@ class SchoolBST {
         if (name < node->school.name) return search(node->left, name);
         return search(node->right, name);
     }
+
+    void inorder(Node* node) {
+        if (node == nullptr) return;
+        inorder(node->left);
+        displaySchoolInfo(node->school);
+        inorder(node->right);
+    }
+
+    void displaySchoolInfo(School s) {
+        cout << "Name: " << s.name << "\nAddress: " << s.address
+             << "\nCity: " << s.city << "\nState: " << s.state
+             << "\nCounty: " << s.county << "\n-------------------------\n";
+    }
+
+public:
+
+    SchoolBST() : root(nullptr) {}
+
+    void insert(School school) {
+        root = insert(root, school);
+    }
+
+    void findByName(string name) {
+        Node* result = search(root, name);
+        if (result) {
+            cout << "School found:\n";
+            displaySchoolInfo(result->school);
+        } else {
+            cout << "Name: " << name << " is not in the list.\n";
+        }
+    }
+
 };
