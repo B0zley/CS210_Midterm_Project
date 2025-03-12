@@ -180,3 +180,55 @@ public:
     }
 
 };
+
+int main() {
+    SchoolBST bst;
+    string filename = "Illinois_Peoria_Schools.csv";
+
+    cout << "Loading schools from CSV file...\n";
+    bst.loadFromCSV(filename);
+    cout << "Schools loaded successfully!\n\n";
+
+    int choice;
+    string schoolName;
+
+    while (true) {
+        cout << "\nMenu:\n";
+        cout << "1. Search for a school by name\n";
+        cout << "2. Delete a school by name\n";
+        cout << "3. Display all schools (In-Order)\n";
+        cout << "4. Display all schools (Pre-Order)\n";
+        cout << "5. Display all schools (Post-Order)\n";
+        cout << "6. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice) {
+            case 1:
+                cout << "Enter the school name to search: ";
+            getline(cin, schoolName);
+            bst.findByName(schoolName);
+            break;
+            case 2:
+                cout << "Enter the school name to delete: ";
+            getline(cin, schoolName);
+            bst.deleteByName(schoolName);
+            break;
+            case 3:
+                bst.displayInOrder();
+            break;
+            case 4:
+                bst.displayPreOrder();
+            break;
+            case 5:
+                bst.displayPostOrder();
+            break;
+            case 6:
+                cout << "Exiting program.\n";
+            return 0;
+            default:
+                cout << "Invalid choice. Please enter a number between 1 and 6.\n";
+        }
+    }
+}
