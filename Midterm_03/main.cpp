@@ -111,6 +111,20 @@ class SchoolBST {
         inorder(node->right);
     }
 
+    void preorder(Node* node) {
+        if (node == nullptr) return;
+        displaySchoolInfo(node->school);
+        preorder(node->left);
+        preorder(node->right);
+    }
+
+    void postorder(Node* node) {
+        if (node == nullptr) return;
+        postorder(node->left);
+        postorder(node->right);
+        displaySchoolInfo(node->school);
+    }
+
     void displaySchoolInfo(School s) {
         cout << "Name: " << s.name << "\nAddress: " << s.address
              << "\nCity: " << s.city << "\nState: " << s.state
@@ -132,6 +146,36 @@ public:
             displaySchoolInfo(result->school);
         } else {
             cout << "Name: " << name << " is not in the list.\n";
+        }
+    }
+
+    void deleteByName(string name) {
+        root = deleteNode(root, name);
+        cout << "School deleted (if found).\n";
+    }
+
+
+    void displayInOrder() {
+        cout << "Displaying schools in alphabetical order:\n";
+        inorder(root);
+    }
+
+    void displayPreOrder() {
+        cout << "Displaying schools in pre-order traversal:\n";
+        preorder(root);
+    }
+
+    void displayPostOrder() {
+        cout << "Displaying schools in post-order traversal:\n";
+        postorder(root);
+    }
+
+    void loadFromCSV(const string& filename) {
+        vector<vector<string>> data = CSVReader::readCSV(filename);
+        for (const auto& row : data) {
+            if (row.size() == 5) {
+                insert(School(row[0], row[1], row[2], row[3], row[4]));
+            }
         }
     }
 
