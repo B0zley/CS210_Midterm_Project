@@ -75,108 +75,38 @@ public:
         }
     }
 
-    Node* deleteNode(Node* node, string name) {
-        if (node == nullptr) return node;
+    void findByName(const string* name) {
+        int index = hashFunction(*name);
+        School* current = table[index];
 
-        if (name < node->school.name) {
-            node->left = deleteNode(node->left, name);
-        } else if (name > node->school.name) {
-            node->right = deleteNode(node->right, name);
-        } else {
-            if (node->left == nullptr) {
-                Node* temp = node->right;
-                delete node;
-                return temp;
-            } else if (node->right == nullptr) {
-                Node* temp = node->left;
-                delete node;
-                return temp;
+        while (current != nullptr) {
+            if (current->name == name) {
+                cout << "School found:\n";
+                displaySchoolInfo(*current);
+                return;
             }
-
-            Node* temp = minValueNode(node->right);
-            node->school = temp->school;
-            node->right = deleteNode(node->right, temp->school.name);
+            current = current->next;
         }
-        return node;
+        cout << "School '" << name << "' not found.\n";
     }
 
-    Node* minValueNode(Node* node) {
-        Node* current = node;
-        while (current && current->left != nullptr)
-            current = current->left;
-        return current;
+    void display() {
+        for (int i = 0; i < TABLE_SIZE; i++) {
+            if (table[i] != nullptr) {
+                cout << "Index " << i << ":\n";
+                School* current = table[i];
+                while (current != nullptr) {
+                    displaySchoolInfo(*current);
+                    current = current->next;
+                }
+            }
+        }
     }
 
-    Node* search(Node* node, string name) {
-        if (node == nullptr || node ->school.name == name) return node;
-        if (name < node->school.name) return search(node->left, name);
-        return search(node->right, name);
-    }
-
-    void inorder(Node* node) {
-        if (node == nullptr) return;
-        inorder(node->left);
-        displaySchoolInfo(node->school);
-        inorder(node->right);
-    }
-
-    void preorder(Node* node) {
-        if (node == nullptr) return;
-        displaySchoolInfo(node->school);
-        preorder(node->left);
-        preorder(node->right);
-    }
-
-    void postorder(Node* node) {
-        if (node == nullptr) return;
-        postorder(node->left);
-        postorder(node->right);
-        displaySchoolInfo(node->school);
-    }
-
-    void displaySchoolInfo(School s) {
+    void displaySchoolInfo(const School& s) {
         cout << "Name: " << s.name << "\nAddress: " << s.address
              << "\nCity: " << s.city << "\nState: " << s.state
              << "\nCounty: " << s.county << "\n-------------------------\n";
-    }
-
-public:
-
-    SchoolBST() : root(nullptr) {}
-
-    void insert(School school) {
-        root = insert(root, school);
-    }
-
-    void findByName(string name) {
-        Node* result = search(root, name);
-        if (result) {
-            cout << "School found:\n";
-            displaySchoolInfo(result->school);
-        } else {
-            cout << "Name: " << name << " is not in the list.\n";
-        }
-    }
-
-    void deleteByName(string name) {
-        root = deleteNode(root, name);
-        cout << "School deleted (if found).\n";
-    }
-
-
-    void displayInOrder() {
-        cout << "Displaying schools in alphabetical order:\n";
-        inorder(root);
-    }
-
-    void displayPreOrder() {
-        cout << "Displaying schools in pre-order traversal:\n";
-        preorder(root);
-    }
-
-    void displayPostOrder() {
-        cout << "Displaying schools in post-order traversal:\n";
-        postorder(root);
     }
 
     void loadFromCSV(const string& filename) {
