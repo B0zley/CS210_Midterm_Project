@@ -75,8 +75,8 @@ public:
         }
     }
 
-    void findByName(const string* name) {
-        int index = hashFunction(*name);
+    void findByName(const string name) {
+        int index = hashFunction(name);
         School* current = table[index];
 
         while (current != nullptr) {
@@ -109,6 +109,28 @@ public:
              << "\nCounty: " << s.county << "\n-------------------------\n";
     }
 
+    void deleteByName(const string& name) {
+        int index = hashFunction(name);
+        School* current = table[index];
+        School* prev = nullptr;
+
+        while (current != nullptr) {
+            if (current->name == name) {
+                if (prev == nullptr) {
+                    table[index] = current->next;
+                } else {
+                    prev->next = current->next;
+                }
+                delete current;
+                cout << "School '" << name << "' deleted.\n";
+                return;
+            }
+            prev = current;
+            current = current->next;
+        }
+        cout << "School '" << name << "' not found.\n";
+    }
+
     void loadFromCSV(const string& filename) {
         vector<vector<string>> data = CSVReader::readCSV(filename);
         for (const auto& row : data) {
@@ -121,11 +143,11 @@ public:
 };
 
 int main() {
-    SchoolBST bst;
+    SchoolHashTable hashTable;
     string filename = "Illinois_Peoria_Schools.csv";
 
     cout << "Loading schools from CSV file...\n";
-    bst.loadFromCSV(filename);
+    hashTable.loadFromCSV(filename);
     cout << "Schools loaded successfully!\n\n";
 
     int choice;
@@ -135,10 +157,8 @@ int main() {
         cout << "\nMenu:\n";
         cout << "1. Search for a school by name\n";
         cout << "2. Delete a school by name\n";
-        cout << "3. Display all schools (In-Order)\n";
-        cout << "4. Display all schools (Pre-Order)\n";
-        cout << "5. Display all schools (Post-Order)\n";
-        cout << "6. Exit\n";
+        cout << "3. Display all schools\n";
+        cout << "4. Exit\n";
         cout << "Enter your choice: ";
         cin >> choice;
         cin.ignore();
@@ -147,27 +167,21 @@ int main() {
             case 1:
                 cout << "Enter the school name to search: ";
             getline(cin, schoolName);
-            bst.findByName(schoolName);
+            hashTable.findByName(schoolName);
             break;
             case 2:
                 cout << "Enter the school name to delete: ";
             getline(cin, schoolName);
-            bst.deleteByName(schoolName);
+            hashTable.deleteByName(schoolName);
             break;
             case 3:
-                bst.displayInOrder();
+                hashTable.display();
             break;
             case 4:
-                bst.displayPreOrder();
-            break;
-            case 5:
-                bst.displayPostOrder();
-            break;
-            case 6:
                 cout << "Exiting program.\n";
             return 0;
             default:
-                cout << "Invalid choice. Please enter a number between 1 and 6.\n";
+                cout << "Invalid choice. Please enter a number between 1 and 4.\n";
         }
     }
 }
