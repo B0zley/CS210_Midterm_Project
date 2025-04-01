@@ -45,19 +45,34 @@ public:
 
 };
 
-class SchoolBST {
+class SchoolHashTable {
     private:
-    Node* root;
+    vector<School*> table;
 
-    Node* insert(Node* node, School school) {
-        if (node == nullptr) return new Node(school);
-        if (school.name < node -> school.name) {
-            node->left = insert(node->left, school);
+    int hashFunction(const string& key) {
+        int hash = 0;
+        for (char ch : key) {
+            hash += ch;
         }
-        else if (school.name > node -> school.name) {
-            node->right = insert(node->right, school);
+        return hash % TABLE_SIZE;
+    }
+public:
+
+    SchoolHashTable() : table(TABLE_SIZE, nullptr) {}
+
+    void insert(School school) {
+        int index = hashFunction(school.name);
+        School* newSchool = new School(school.name, school.address, school.city, school.state, school.county);
+
+        if (!table[index]) {
+            table[index] = newSchool;
+        } else {
+            School* current = table[index];
+            while (current->next) {
+                current = current->next;
+            }
+            current->next = newSchool;
         }
-        return node;
     }
 
     Node* deleteNode(Node* node, string name) {
