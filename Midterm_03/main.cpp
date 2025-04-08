@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "Timer.h" // Ensure Timer.h is included for timing operations
 using namespace std;
 
 struct School {
@@ -10,11 +11,9 @@ struct School {
     string city;
     string state;
     string county;
-    School* next;
 
     School(string n, string a, string c, string s, string co)
-    : name(n), address(a), city(c), state(s), county(co), next(nullptr) {}
-
+    : name(n), address(a), city(c), state(s), county(co) {}
 };
 
 struct Node {
@@ -48,19 +47,18 @@ public:
         file.close();
         return data;
     }
-
 };
 
 class SchoolBST {
-    private:
+private:
     Node* root;
 
     Node* insert(Node* node, School school) {
         if (node == nullptr) return new Node(school);
-        if (school.name < node -> school.name) {
+        if (school.name < node->school.name) {
             node->left = insert(node->left, school);
         }
-        else if (school.name > node -> school.name) {
+        else if (school.name > node->school.name) {
             node->right = insert(node->right, school);
         }
         return node;
@@ -99,7 +97,7 @@ class SchoolBST {
     }
 
     Node* search(Node* node, string name) {
-        if (node == nullptr || node ->school.name == name) return node;
+        if (node == nullptr || node->school.name == name) return node;
         if (name < node->school.name) return search(node->left, name);
         return search(node->right, name);
     }
@@ -111,20 +109,6 @@ class SchoolBST {
         inorder(node->right);
     }
 
-    void preorder(Node* node) {
-        if (node == nullptr) return;
-        displaySchoolInfo(node->school);
-        preorder(node->left);
-        preorder(node->right);
-    }
-
-    void postorder(Node* node) {
-        if (node == nullptr) return;
-        postorder(node->left);
-        postorder(node->right);
-        displaySchoolInfo(node->school);
-    }
-
     void displaySchoolInfo(School s) {
         cout << "Name: " << s.name << "\nAddress: " << s.address
              << "\nCity: " << s.city << "\nState: " << s.state
@@ -132,7 +116,6 @@ class SchoolBST {
     }
 
 public:
-
     SchoolBST() : root(nullptr) {}
 
     void insert(School school) {
@@ -154,22 +137,6 @@ public:
         cout << "School deleted (if found).\n";
     }
 
-
-    void displayInOrder() {
-        cout << "Displaying schools in alphabetical order:\n";
-        inorder(root);
-    }
-
-    void displayPreOrder() {
-        cout << "Displaying schools in pre-order traversal:\n";
-        preorder(root);
-    }
-
-    void displayPostOrder() {
-        cout << "Displaying schools in post-order traversal:\n";
-        postorder(root);
-    }
-
     void loadFromCSV(const string& filename) {
         vector<vector<string>> data = CSVReader::readCSV(filename);
         for (const auto& row : data) {
@@ -178,57 +145,51 @@ public:
             }
         }
     }
-
 };
 
 int main() {
-    SchoolBST bst;
-    string filename = "Illinois_Peoria_Schools.csv";
+    string filename = "Illinois_Schools.csv";
 
-    cout << "Loading schools from CSV file...\n";
-    bst.loadFromCSV(filename);
-    cout << "Schools loaded successfully!\n\n";
+    // Made-up school details
+    string name = "Test High School";
+    string address = "123 Testing Lane";
+    string city = "Faketown";
+    string state = "IL";
+    string county = "Imaginary";
 
-    int choice;
-    string schoolName;
-
-    while (true) {
-        cout << "\nMenu:\n";
-        cout << "1. Search for a school by name\n";
-        cout << "2. Delete a school by name\n";
-        cout << "3. Display all schools (In-Order)\n";
-        cout << "4. Display all schools (Pre-Order)\n";
-        cout << "5. Display all schools (Post-Order)\n";
-        cout << "6. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cin.ignore();
-
-        switch (choice) {
-            case 1:
-                cout << "Enter the school name to search: ";
-            getline(cin, schoolName);
-            bst.findByName(schoolName);
-            break;
-            case 2:
-                cout << "Enter the school name to delete: ";
-            getline(cin, schoolName);
-            bst.deleteByName(schoolName);
-            break;
-            case 3:
-                bst.displayInOrder();
-            break;
-            case 4:
-                bst.displayPreOrder();
-            break;
-            case 5:
-                bst.displayPostOrder();
-            break;
-            case 6:
-                cout << "Exiting program.\n";
-            return 0;
-            default:
-                cout << "Invalid choice. Please enter a number between 1 and 6.\n";
-        }
+    // Step 1: Write made-up school to CSV file
+    ofstream outFile(filename, ios::app); // Open file in append mode
+    if (!outFile.is_open()) {
+        cerr << "Failed to open " << filename << " for writing.\n";
+        return 1;
     }
+
+    SchoolBST bst;
+
+    cout << "Loading from CSV...\n";
+    bst.loadFromCSV(filename);
+
+    School testSchool(name, address, city, state, county);
+
+    // Insert timing
+    cout << "Inserting test school...\n";
+    double insertTime = Timer::time_function([&]() {
+        bst.insert(testSchool);
+    });
+    cout << "Insert Time: " << insertTime << " microseconds\n\n";
+    // Measure the search time
+    cout << "Searching for test school...\n";
+    double searchTime = Timer::time_function([&]() {
+        bst.findByName(name);
+    });
+    cout << "Search Time: " << searchTime << " microseconds\n\n";
+
+    // Measure the delete time
+    cout << "Deleting test school...\n";
+    double deleteTime = Timer::time_function([&]() {
+        bst.deleteByName(name);
+    });
+    cout << "Delete Time: " << deleteTime << " microseconds\n";
+
+    return 0;
 }
