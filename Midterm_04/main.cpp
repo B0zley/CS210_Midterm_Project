@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "Timer.h"
 using namespace std;
 
 const int TABLE_SIZE = 100;
@@ -16,7 +17,6 @@ struct School {
 
     School(string n, string a, string c, string s, string co)
     : name(n), address(a), city(c), state(s), county(co), next(nullptr) {}
-
 };
 
 class CSVReader {
@@ -42,11 +42,10 @@ public:
         file.close();
         return data;
     }
-
 };
 
 class SchoolHashTable {
-    private:
+private:
     vector<School*> table;
 
     int hashFunction(const string& key) {
@@ -56,8 +55,8 @@ class SchoolHashTable {
         }
         return hash % TABLE_SIZE;
     }
-public:
 
+public:
     SchoolHashTable() : table(TABLE_SIZE, nullptr) {}
 
     void insert(School school) {
@@ -75,7 +74,7 @@ public:
         }
     }
 
-    void findByName(const string name) {
+    void findByName(const string& name) {
         int index = hashFunction(name);
         School* current = table[index];
 
@@ -88,25 +87,6 @@ public:
             current = current->next;
         }
         cout << "School '" << name << "' not found.\n";
-    }
-
-    void display() {
-        for (int i = 0; i < TABLE_SIZE; i++) {
-            if (table[i] != nullptr) {
-                cout << "Index " << i << ":\n";
-                School* current = table[i];
-                while (current != nullptr) {
-                    displaySchoolInfo(*current);
-                    current = current->next;
-                }
-            }
-        }
-    }
-
-    void displaySchoolInfo(const School& s) {
-        cout << "Name: " << s.name << "\nAddress: " << s.address
-             << "\nCity: " << s.city << "\nState: " << s.state
-             << "\nCounty: " << s.county << "\n-------------------------\n";
     }
 
     void deleteByName(const string& name) {
@@ -131,6 +111,12 @@ public:
         cout << "School '" << name << "' not found.\n";
     }
 
+    void displaySchoolInfo(const School& s) {
+        cout << "Name: " << s.name << "\nAddress: " << s.address
+             << "\nCity: " << s.city << "\nState: " << s.state
+             << "\nCounty: " << s.county << "\n-------------------------\n";
+    }
+
     void loadFromCSV(const string& filename) {
         vector<vector<string>> data = CSVReader::readCSV(filename);
         for (const auto& row : data) {
@@ -139,49 +125,57 @@ public:
             }
         }
     }
-
 };
 
 int main() {
-    SchoolHashTable hashTable;
-    string filename = "Illinois_Peoria_Schools.csv";
+    // CSV file to work with
+    string filename = "Test_Schools.csv";
 
-    cout << "Loading schools from CSV file...\n";
-    hashTable.loadFromCSV(filename);
-    cout << "Schools loaded successfully!\n\n";
+    // Made-up school details
+    string name = "Test High School";
+    string address = "123 Testing Lane";
+    string city = "Faketown";
+    string state = "IL";
+    string county = "Imaginary";
 
-    int choice;
-    string schoolName;
-
-    while (true) {
-        cout << "\nMenu:\n";
-        cout << "1. Search for a school by name\n";
-        cout << "2. Delete a school by name\n";
-        cout << "3. Display all schools\n";
-        cout << "4. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cin.ignore();
-
-        switch (choice) {
-            case 1:
-                cout << "Enter the school name to search: ";
-            getline(cin, schoolName);
-            hashTable.findByName(schoolName);
-            break;
-            case 2:
-                cout << "Enter the school name to delete: ";
-            getline(cin, schoolName);
-            hashTable.deleteByName(schoolName);
-            break;
-            case 3:
-                hashTable.display();
-            break;
-            case 4:
-                cout << "Exiting program.\n";
-            return 0;
-            default:
-                cout << "Invalid choice. Please enter a number between 1 and 4.\n";
-        }
+    // Step 1: Write made-up school to the CSV file
+    ofstream outFile(filename);
+    if (!outFile.is_open()) {
+        cerr << "Failed to open " << filename << " for writing.\n";
+        return 1;
     }
+
+    SchoolHashTable hashTable;
+
+    // Step 2: Time the insertion (loading from CSV)
+    cout << "Loading from CSV...\n";
+        hashTable.loadFromCSV(filename);
+
+    School testSchool(name, address, city, state, county);
+
+    // Insert timing
+    cout << "Inserting test school...\n";
+    double insertTime = Timer::time_function([&]() {
+        hashTable.insert(testSchool);
+    });
+    cout << "Insert Time: " << insertTime << " microseconds\n\n";
+
+
+    // Step 3: Time the search
+    cout << "Searching for test school...\n";
+    double searchTime = Timer::time_function([&]() {
+        hashTable.findByName(name);
+    });
+    cout << "Search Time: " << searchTime << " microseconds\n\n";
+
+    // Step 4: Time the delete
+    cout << "Deleting test school...\n";
+    double deleteTime = Timer::time_function([&]() {
+        hashTable.deleteByName(name);
+    });
+    cout << "Delete Time: " << deleteTime << " microseconds\n";
+
+    return 0;
 }
+
+
