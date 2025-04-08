@@ -1,8 +1,8 @@
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include "Timer.h" // Ensure Timer.h is included for timing operations
 using namespace std;
 
 struct School {
@@ -15,7 +15,6 @@ struct School {
 
     School(string n, string a, string c, string s, string co)
     : name(n), address(a), city(c), state(s), county(co), next(nullptr) {}
-
 };
 
 class CSVReader {
@@ -41,17 +40,15 @@ public:
         file.close();
         return data;
     }
-
 };
 
-class SchoolList
-{
+class SchoolList {
     School* head;
+
 public:
     SchoolList() : head(nullptr) {}
 
-    void insertFirst(School school)
-    {
+    void insertFirst(School school) {
         School* newSchool = new School(school);
         newSchool->next = head;
         head = newSchool;
@@ -112,7 +109,6 @@ public:
             current = current->next;
         }
         cout << "Name: " << name <<" is not in the list."<< endl;
-        return;
     }
 
     void display() const {
@@ -139,47 +135,49 @@ public:
 };
 
 int main() {
-    SchoolList list;
-    string filename = "schools.csv";
+    string filename = "Illinois_Schools.csv";
 
-    cout << "Loading schools from CSV file...\n";
-    list.loadFromCSV(filename);
-    cout << "Schools loaded successfully!\n\n";
+    // Made-up school details
+    string name = "Test High School";
+    string address = "123 Testing Lane";
+    string city = "Faketown";
+    string state = "IL";
+    string county = "Imaginary";
 
-    int choice;
-    string schoolName;
-
-    while (true) {
-        cout << "\nMenu:\n";
-        cout << "1. Search for a school by name\n";
-        cout << "2. Delete a school by name\n";
-        cout << "3. Display all schools\n";
-        cout << "4. Exit\n";
-        cout << "Enter your choice: ";
-        cin >> choice;
-        cin.ignore();
-
-        switch (choice) {
-            case 1:
-                cout << "Enter the school name to search: ";
-            getline(cin, schoolName);
-            list.findByName(schoolName);
-            break;
-            case 2:
-                cout << "Enter the school name to delete: ";
-            getline(cin, schoolName);
-            list.deleteByName(schoolName);
-            cout << "School deleted (if found).\n";
-            break;
-            case 3:
-                cout << "Displaying all schools:\n";
-            list.display();
-            break;
-            case 4:
-                cout << "Exiting program.\n";
-            return 0;
-            default:
-                cout << "Invalid choice. Please enter a number between 1 and 4.\n";
-        }
+    // Step 1: Write made-up school to CSV file
+    ofstream outFile(filename, ios::app); // Open file in append mode
+    if (!outFile.is_open()) {
+        cerr << "Failed to open " << filename << " for writing.\n";
+        return 1;
     }
+
+
+    SchoolList list;
+
+    cout << "Loading from CSV...\n";
+    list.loadFromCSV(filename);
+
+    School testSchool(name, address, city, state, county);
+
+    // Insert timing
+    cout << "Inserting test school...\n";
+    double insertTime = Timer::time_function([&]() {
+        list.insertFirst(testSchool);
+    });
+    cout << "Insert Time: " << insertTime << " microseconds\n\n";
+    // Step 3: Measure the search time
+    cout << "Searching for test school...\n";
+    double searchTime = Timer::time_function([&]() {
+        list.findByName(name);
+    });
+    cout << "Search Time: " << searchTime << " microseconds\n\n";
+
+    // Step 4: Measure the delete time
+    cout << "Deleting test school...\n";
+    double deleteTime = Timer::time_function([&]() {
+        list.deleteByName(name);
+    });
+    cout << "Delete Time: " << deleteTime << " microseconds\n";
+
+    return 0;
 }
