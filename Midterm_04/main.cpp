@@ -129,7 +129,7 @@ public:
 
 int main() {
     // CSV file to work with
-    string filename = "Test_Schools.csv";
+    string filename = "Illinois_Schools.csv";
 
     // Made-up school details
     string name = "Test High School";
